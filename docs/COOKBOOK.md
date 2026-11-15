@@ -177,4 +177,81 @@ napojí soubory (`PARTSDD` ↔ `ASSIGN TO PARTSDD`).
 > `OPEN` / `PERFORM UNTIL` + `READ ... AT END` / `CLOSE`. Spouští se JCL jobem,
 > co nejdřív zkompiluje a pak program spustí se STEPLIB a DD napojením."
 
+## Téma: Datový model na sále (a čím se liší od relační DB)
+
+Na z/OS žijou vedle sebe **tři světy ukládání dat** — a to, který drží co, JE
+kus té „enterprise architektury".
+
+**1. VSAM — keyed soubory (co jsme používali).**
+Není to databáze, jsou to **strukturované soubory**. Typy: **KSDS** (klíčovaný,
+čteš po klíči = jedna indexovaná tabulka), **ESDS** (append log), **RRDS** (po
+čísle záznamu). Žádný SQL, žádné joiny, žádné vztahy. Navigace po klíči nebo
+sekvenčně. Rychlé, prosté, všudypřítomné.
+
+**2. IMS — hierarchická databáze.**
+Data jako **strom segmentů**: rodič → děti → vnuci. Celá entita (pojistka,
+objednávka) i se svými potomky = **jedna hierarchie**. Navigace **dolů stromem**
+voláními `GU` / `GN` / `GNP`. Místo joinů přes kolekce **lezeš dovnitř jedné
+entity**.
+
+**3. DB2 — relační na sále.**
+Tabulky, řádky, SQL, joiny, klíče — úplně jako Postgres. Moderní relační volba,
+běží **vedle** těch starších.
+
+**Jádro rozdílu — navigational vs relational:**
+
+| | Relační (DB2, Postgres) | Navigational (VSAM, IMS) |
+|---|---|---|
+| Data | tabulky (ploché kolekce) | keyed soubor / strom |
+| Vztahy | foreign keys | pozice v souboru / větev stromu |
+| Entitu složíš | **JOINem** přes tabulky | **sestupem** do klíče/stromu |
+| Kdo řídí přístup | engine (optimizer) | **ty** (kóduješ access path) |
+| Styl | deklarativní („CO chci") | imperativní („JAK se tam dostat") |
+
+- **Relační** = *„popiš CO chceš, engine vymyslí jak"* (SQL, optimizer).
+  Flexibilní — jakýkoli dotaz — ale platíš cenu joinů a optimizeru.
+- **Navigational** = *„nakóduj JAK se k datům dostaneš"* (čti klíč, jdi na dítě).
+  **Extrémně rychlé a předvídatelné** pro známou cestu — žádný join, žádné
+  překvapení optimizeru. Proto banky/pojišťovny zvládaly miliony transakcí denně
+  dekády předtím, než to relační dohnalo. Cena: **rigidní** — zeptat se jinak je
+  těžké, struktura je postavená kolem té známé cesty.
+
+**Mentální přepnutí:** relační = *dotaz tě dovede k datům*; navigational =
+*ty chodíš po datech za ruku*. SQL vs pointer-chasing.
+
+**Architektonicky:** reálný estate má **všechny tři** — VSAM pro něco, IMS pro
+nejstarší hierarchické jádro, DB2 pro novější relační — a **data mezi nimi
+tečou.** Vědět, který store drží co a jak se data přelévají, **JE** ta „analýza
+datových toků / enterprise architektura" z inzerátu.
+
+**Co říct u pohovoru:**
+> „Sál má tři datové světy: VSAM (keyed soubory), IMS (hierarchická DB, strom
+> segmentů) a DB2 (relační). Klíčový rozdíl je navigational vs relational —
+> u VSAM/IMS kóduju access path sám (čti klíč, jdi na dítě), u DB2 popíšu SQL
+> a optimizer to vyřeší. Navigational je rychlé a předvídatelné pro známé cesty,
+> relační flexibilní. Reálný estate kombinuje všechny tři a data mezi nimi
+> tečou — a pochopit ty toky je půlka té práce."
+
+## Téma: Architektura = pipeline + datové toky
+
+Reálná aplikace na sále **není jeden program** — je to **pipeline kroků**, mezi
+kterými **tečou data přes datasety**. Tohle je ta „enterprise architektura".
+
+- **Job = N kroků** (`EXEC`); **output datasetu jednoho kroku = input dalšího**.
+- **Temp dataset `&&NAME`** = žije jen po dobu jobu. `DISP=(NEW,PASS)` = vytvoř
+  a předej dalšímu kroku; `DISP=(OLD,DELETE)` = vezmi a po použití smaž.
+- **SORT** (DFSORT) = utilita, co seřadí soubor:
+  `SORT FIELDS=(pozice,délka,typ,směr)` — např. `(9,2,CH,A)` = od pozice 9,
+  2 znaky, znakově (CH), vzestupně (A).
+- **Integrace** = **interface soubor** předaný jinému systému (SAP…) = „datový
+  tok mezi systémy".
+- **Dopad změn:** změníš krok 2 → propíše se do priced → report → extract →
+  downstream. Pochopit ten **ripple** = „dopad změn na celý systém".
+
+**Co říct u pohovoru:**
+> „Mainframe aplikace je pipeline job kroků, kde output datasetu jednoho kroku
+> je input dalšího — data tečou přes (často dočasné) datasety. Integrace na jiné
+> systémy je přes interface soubory. Takže ‚dopad změny' čtu jako ripple skrz tu
+> pipeline až k downstream systému — to je ta analýza datových toků."
+
 <!-- další lekce se přidávají sem, jak stavíme -->
