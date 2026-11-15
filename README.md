@@ -71,6 +71,21 @@ Setup steps in [docs/setup.md](docs/setup.md).
 | `order-report/` | `ORDRPT` — control-break country report |
 | `docs/` | Use cases, architecture diagrams, setup |
 
+## Run it locally
+
+No mainframe needed — [GnuCOBOL](https://gnucobol.sourceforge.io/) compiles and
+runs the COBOL on a laptop:
+
+```sh
+brew install gnucobol     # once
+make test                 # unit tests for the pricing logic
+make run                  # whole pipeline: price -> report -> SAP extract
+```
+
+`make run` loads the catalogue, prices the sample orders, prints the
+control-break country report and writes the SAP interface file. The DB2 load is
+the only step that needs a real z/OS.
+
 ## Status
 
 🚧 Work in progress — parts catalogue (VSAM), order pricing (COBOL) and the

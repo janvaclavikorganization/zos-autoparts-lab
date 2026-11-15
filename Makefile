@@ -8,10 +8,14 @@
 COBC   = cobc
 BUILD  = build
 
-.PHONY: test clean
+.PHONY: test run clean
 
 test: $(BUILD)/testprice
 	./$(BUILD)/testprice
+
+# Run the whole pipeline locally (price -> report -> SAP extract)
+run:
+	./run-local.sh
 
 $(BUILD)/testprice: tests/TESTPRICE.cbl order-pricing/PRICECAL.cbl
 	mkdir -p $(BUILD)
