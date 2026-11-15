@@ -1,9 +1,7 @@
 # order-report/
 
-`ORDRPT` — country sales report with control breaks (UC-3).
+`ORDRPT.cbl` — country sales report with **control breaks**: a detail line per
+order, a SUBTOTAL whenever the country changes, and a GRAND TOTAL at the end.
 
-Planned:
-- Sort step (DFSORT / JCL) by country, dealer.
-- `ORDRPT.cbl` — control-break report with per-dealer / per-country subtotals
-  and grand total.
-- `RUNRPT.jcl`.
+Expects the priced file **sorted by country** (the pipeline sorts it before this
+step). Reads `PRICEREC`; writes report lines to the `RPTOUT` print file.
