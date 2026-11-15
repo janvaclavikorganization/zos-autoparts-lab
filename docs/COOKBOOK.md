@@ -139,4 +139,38 @@ Pozice = všechno. (`parts.dat`, každý řádek 42 znaků.)
 > „Plochý soubor nahraju na z/OS a přes IDCAMS `REPRO` ho načtu do KSDS —
 > INFILE → OUTFILE. Záznamy jsou fixed-width, takže klíč sedí na prvních N bajtů."
 
+## Lekce 4 — První COBOL program (čtečka)
+
+**Každý program = 4 divisions:**
+1. **IDENTIFICATION** — jméno programu.
+2. **ENVIRONMENT** — napojení souborů (`SELECT ... ASSIGN TO ddname`, typ souboru).
+3. **DATA** — struktury: záznam (`COPY` copybooku = reuse) + `WORKING-STORAGE`
+   (lokální proměnné, flagy, počítadla).
+4. **PROCEDURE** — logika (těla metod).
+
+**Vzor čtení souboru (procedure):**
+```
+OPEN INPUT soubor
+PERFORM UNTIL konec        (= while)
+   READ soubor
+     AT END     → nastav flag konce
+     NOT AT END → zpracuj záznam (DISPLAY = print)
+CLOSE soubor
+GOBACK                     (= return)
+```
+
+Mapování na C#: `SELECT/ASSIGN` = inject souboru, `FD` = tvar záznamu,
+`WORKING-STORAGE` = lokální proměnné, `PERFORM UNTIL` = `while`, `DISPLAY` =
+`Console.WriteLine`, `GOBACK` = `return`.
+
+**Spuštění (JCL):** dvoukrokový job — ① `EXEC IGYWCL` zkompiluje + slinkuje
+program, ② `EXEC PGM=xxx` ho spustí; `STEPLIB` = kde je load modul, DD jména
+napojí soubory (`PARTSDD` ↔ `ASSIGN TO PARTSDD`).
+
+**Co říct u pohovoru:**
+> „COBOL program má čtyři divisions — identification, environment (napojení
+> souborů), data (záznamy + working-storage), procedure (logika). Soubor čtu
+> `OPEN` / `PERFORM UNTIL` + `READ ... AT END` / `CLOSE`. Spouští se JCL jobem,
+> co nejdřív zkompiluje a pak program spustí se STEPLIB a DD napojením."
+
 <!-- další lekce se přidávají sem, jak stavíme -->
