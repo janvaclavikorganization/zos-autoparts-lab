@@ -254,4 +254,29 @@ kterými **tečou data přes datasety**. Tohle je ta „enterprise architektura"
 > systémy je přes interface soubory. Takže ‚dopad změny' čtu jako ripple skrz tu
 > pipeline až k downstream systému — to je ta analýza datových toků."
 
+## Téma: Testování COBOLu (lokálně, bez sálu)
+
+Mainframe svět skoro netestuje — spustí job a kouká na output očima.
+**Test-driven COBOL = vzácnost → diferenciátor.**
+
+**Jak to děláme:**
+- **Oddělená logika:** pricing pravidla žijou v `PRICECAL` (bez I/O, jen
+  vstupy→výstupy přes `LINKAGE`). Čistá logika bez souborů jde **unit-testovat
+  samostatně**; `ORDPROC` ji pak jen `CALL`-ne.
+- **GnuCOBOL (`cobc`)** kompiluje a spouští COBOL **přímo na Macu** — žádný z/OS.
+  Instalace jednou: `brew install gnucobol`.
+- **`tests/TESTPRICE.cbl`** = test driver: scénář per větev (happy path, DPH
+  CZ/DE/AT, neznámá země → error, nulové množství), PASS/FAIL + non-zero exit.
+- **Spuštění:** `make test`.
+
+**Dvě vrstvy:**
+- **Unit (lokálně, GnuCOBOL)** — logika a větvení, rychle, offline.
+- **Integrace (z/OS / Z Xplore)** — reálný běh VSAM / JCL / DB2.
+
+**Co říct u pohovoru:**
+> „Pricing pravidla mám oddělená do čistého modulu bez I/O, takže je unit-testuju
+> lokálně v GnuCOBOL — scénář per větev, `make test`, non-zero exit při failu.
+> Těžkou integraci (VSAM, JCL, DB2) pak ověřuju na z/OS. Dvě vrstvy: rychlá
+> logika lokálně, integrace na targetu."
+
 <!-- další lekce se přidávají sem, jak stavíme -->
