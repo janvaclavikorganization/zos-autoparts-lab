@@ -25,7 +25,7 @@
 
        PROCEDURE DIVISION USING LK-COUNTRY LK-QTY LK-PRICE
                                 LK-GROSS LK-STATUS.
-      *    pick the VAT rate from the country; unknown -> error
+      *    pick the VAT rate from the country; unknown -> status 'E'
            MOVE 'O' TO LK-STATUS
            EVALUATE LK-COUNTRY
              WHEN 'CZ' MOVE 0.210 TO WS-RATE

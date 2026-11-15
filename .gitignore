@@ -2,5 +2,5 @@
 *.log
 build/
 
-# personal learning notes - not part of the public reference project
+# local working notes (not published)
 docs/COOKBOOK.md

@@ -50,7 +50,7 @@
            MOVE 2       TO WS-QTY
            MOVE 24.50   TO WS-PRICE
            PERFORM CALL-PRICECAL
-           PERFORM EXPECT-ERROR
+           PERFORM EXPECT-STATUS-E
 
       *    5) edge: zero quantity -> gross 0, status 'O'
            MOVE 'CZ'    TO WS-COUNTRY
@@ -100,7 +100,7 @@
                ADD 1 TO WS-FAILS
            END-IF.
 
-       EXPECT-ERROR.
+       EXPECT-STATUS-E.
            IF WS-STATUS = 'E'
                DISPLAY 'PASS  unknown country -> status E'
            ELSE

@@ -13,7 +13,7 @@ BUILD  = build
 test: $(BUILD)/testprice
 	./$(BUILD)/testprice
 
-# Run the whole pipeline locally (price -> report -> SAP extract)
+# Run the whole pipeline locally (price -> report -> invoice extract)
 run:
 	./run-local.sh
 

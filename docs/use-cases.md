@@ -28,8 +28,8 @@ part is fetched directly by its key, not joined across tables.
 | **Actor** | Nightly batch scheduler |
 | **Trigger** | End-of-day order file arrives |
 | **Input** | Orders: order id, country, part number, quantity |
-| **Flow** | For each order → look up the part in the master → line price = base price × quantity → add country VAT → write a priced record. Unknown parts are **flagged, not dropped**. |
-| **Output** | Priced orders file + a run summary (priced / error counts) |
+| **Flow** | For each order → look up the part in the master → line price = base price × quantity → add country VAT → write a priced record. Unknown parts are **skipped and counted**, not dropped silently. |
+| **Output** | Priced orders file + a run summary (priced / skipped counts) |
 
 The core batch — the bread-and-butter workload of a parts mainframe: read a file,
 enrich it against a master, compute money, write a file. (`ORDPROC`, calling the

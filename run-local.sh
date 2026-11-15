@@ -51,7 +51,7 @@ echo
 
 echo "▌ 4 · BILLING INTERFACE EXTRACT"
 echo
-PRICEDDD=$BUILD/priced.dat SAPOUT=$BUILD/bill.dat ./$BUILD/invextr | indent
+PRICEDDD=$BUILD/priced.dat BILLOUT=$BUILD/bill.dat ./$BUILD/invextr | indent
 echo
 echo "      billing interface file:"
 fold -w26 $BUILD/bill.dat | sed 's/^/        /'
