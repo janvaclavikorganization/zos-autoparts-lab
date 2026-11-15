@@ -1,9 +1,11 @@
 # order-pricing/
 
-`ORDPROC` — the core pricing batch (UC-2).
+Order pricing — the core of the flow.
 
-Planned:
-- `ORDPROC.cbl` — read orders, look up parts in VSAM, compute line price +
-  country VAT, write priced file, flag errors.
-- `RUNPROC.jcl` — compile / link + run step, DD wiring.
-- `orders.sample` — sample daily order input.
+- `PRICECAL.cbl` — pure pricing rules (country VAT + line total), no I/O, so they
+  can be unit-tested on their own.
+- `ORDPROC.cbl` — the batch: read orders, look up each part in the VSAM
+  catalogue, call `PRICECAL`, write a priced record; unknown parts are flagged.
+- `orders.dat` — sample daily orders (fixed 25-byte records).
+- `DAILYRUN.jcl` — orchestrates the whole daily flow (price → report → SAP
+  extract → DB2 load) as chained job steps.

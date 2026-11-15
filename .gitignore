@@ -1,3 +1,6 @@
 .DS_Store
 *.log
 build/
+
+# personal learning notes - not part of the public reference project
+docs/COOKBOOK.md

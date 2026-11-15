@@ -1,8 +1,9 @@
 # parts-vsam/
 
-Parts master as a **VSAM KSDS** — key-sequenced, keyed by part number (UC-1).
+The parts catalogue as a **VSAM KSDS** — key-sequenced, keyed by part number.
 
-Planned:
-- JCL to DEFINE the KSDS cluster (IDCAMS).
-- JCL + data to load the initial parts.
-- A small COBOL reader (random + sequential) to prove key access.
+- `DEFPARTS.jcl` — IDCAMS `DEFINE CLUSTER` to create the KSDS.
+- `parts.dat` — sample parts (fixed 42-byte records).
+- `LOADPART.jcl` — IDCAMS `REPRO` to load `parts.dat` into the KSDS.
+- `PARTRDR.cbl` / `RUNRDR.jcl` — a small reader that prints the catalogue
+  (the first COBOL program, shows the 4 divisions and keyed file I/O).

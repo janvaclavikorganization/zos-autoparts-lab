@@ -40,7 +40,7 @@ Operational data lives in **VSAM** (parts, orders, priced results) — keyed fil
 navigational access, fast for known paths. The analytics summary lands in **DB2**
 (relational), queryable with SQL by downstream reporting. The same flow shows
 both storage models side by side — see
-[COOKBOOK.md](COOKBOOK.md) → *Datový model na sále*.
+[architecture.md](architecture.md) → *Two data models*.
 
 ## Data flow, branching & integration
 
