@@ -34,6 +34,7 @@
        01  WS-STATUS          PIC X(02).
        01  WS-EOF             PIC X(01) VALUE 'N'.
        01  WS-WRITTEN         PIC 9(05) VALUE 0.
+       01  WS-WRITTEN-D       PIC Z(4)9.
 
        PROCEDURE DIVISION.
        MAIN.
@@ -51,7 +52,8 @@
 
            CLOSE PRICED-FILE
            CLOSE SAP-FILE
-           DISPLAY 'INVOICE RECORDS WRITTEN: ' WS-WRITTEN
+           MOVE WS-WRITTEN TO WS-WRITTEN-D
+           DISPLAY 'invoice records: ' WS-WRITTEN-D
            GOBACK.
 
        READ-PRICED.

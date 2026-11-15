@@ -32,6 +32,7 @@
        01  WS-OUT-ST         PIC X(02).
        01  WS-EOF            PIC X(01) VALUE 'N'.
        01  WS-CNT            PIC 9(03) VALUE 0.
+       01  WS-CNT-D          PIC Z(2)9.
 
        PROCEDURE DIVISION.
        MAIN.
@@ -47,5 +48,6 @@
            END-PERFORM
            CLOSE IN-FILE
            CLOSE OUT-FILE
-           DISPLAY 'PARTS LOADED: ' WS-CNT
+           MOVE WS-CNT TO WS-CNT-D
+           DISPLAY 'parts loaded: ' WS-CNT-D
            GOBACK.

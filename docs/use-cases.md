@@ -2,7 +2,7 @@
 
 The lab models one coherent slice of an automotive **spare-parts distribution**
 core system: keep the catalogue, price the orders, then hand the result to a
-report and two downstream systems.
+report and the billing system.
 
 ---
 
@@ -60,22 +60,7 @@ group boundary — the idiomatic way reporting is done in COBOL batch. (`ORDRPT`
 | **Trigger** | After pricing completes |
 | **Input** | Priced orders file |
 | **Flow** | For each successfully priced order, map the fields into the invoicing layout and write one interface record |
-| **Output** | Fixed-format interface file handed off to **SAP FI** |
+| **Output** | Fixed-format interface file handed off to the **billing system** |
 
 The interface file is the seam between systems — the integration hand-off.
 (`INVEXTR`.)
-
----
-
-## UC-5 · Load the sales summary into DB2
-
-| | |
-|---|---|
-| **Actor** | BI / reporting |
-| **Trigger** | After pricing completes |
-| **Input** | Priced orders file |
-| **Flow** | Insert each priced order into a DB2 table via embedded SQL |
-| **Output** | `SALES` table in **DB2**, queryable with ordinary SQL |
-
-Operational data stays in VSAM; the analytics copy lands in relational DB2 — both
-data models in one flow. (`SALESDB2`; needs a real z/OS + DB2 runtime.)

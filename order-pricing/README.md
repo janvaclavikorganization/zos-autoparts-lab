@@ -7,5 +7,5 @@ Order pricing — the core of the flow.
 - `ORDPROC.cbl` — the batch: read orders, look up each part in the VSAM
   catalogue, call `PRICECAL`, write a priced record; unknown parts are flagged.
 - `orders.dat` — sample daily orders (fixed 25-byte records).
-- `DAILYRUN.jcl` — orchestrates the whole daily flow (price → report → SAP
-  extract → DB2 load) as chained job steps.
+- `DAILYRUN.jcl` — orchestrates the whole daily flow (price → report → invoice
+  extract) as chained job steps.

@@ -4,7 +4,7 @@
 //* Key = part number = first 10 bytes of each 42-byte record
 //* (matches PART-NO / record length in copybook/PARTREC.cpy).
 //*
-//* >>> replace ZXUSER with your own HLQ (your Z Xplore user id) <<<
+//* >>> replace ZXUSER with your own HLQ (your user id) <<<
 //* CLASS / MSGCLASS may differ on your system - adjust if needed.
 //*------------------------------------------------------------------
 //DEFINE   EXEC PGM=IDCAMS

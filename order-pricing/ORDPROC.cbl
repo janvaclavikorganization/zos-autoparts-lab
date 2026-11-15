@@ -42,9 +42,11 @@
        01  WS-PRC-STATUS  PIC X(02).
       *    end-of-file flag for the orders file
        01  WS-EOF         PIC X(01) VALUE 'N'.
-      *    counters
+      *    counters (+ edited fields for clean display)
        01  WS-PRICED      PIC 9(05) VALUE 0.
-       01  WS-ERRORS      PIC 9(05) VALUE 0.
+       01  WS-SKIPPED     PIC 9(05) VALUE 0.
+       01  WS-PRICED-D    PIC Z(4)9.
+       01  WS-SKIPPED-D   PIC Z(4)9.
       *    outputs returned by PRICECAL
        01  WS-GROSS       PIC 9(9)V99.
        01  WS-PSTATUS     PIC X(01).
@@ -69,7 +71,9 @@
            CLOSE ORDERS-FILE
            CLOSE PARTS-FILE
            CLOSE PRICED-FILE
-           DISPLAY 'PRICED: ' WS-PRICED '  ERRORS: ' WS-ERRORS
+           MOVE WS-PRICED  TO WS-PRICED-D
+           MOVE WS-SKIPPED TO WS-SKIPPED-D
+           DISPLAY 'priced:' WS-PRICED-D '    skipped:' WS-SKIPPED-D
            GOBACK.
 
       *----------------------------------------------------------------
@@ -81,9 +85,10 @@
       *    ...and fetch that single part by key
            READ PARTS-FILE KEY IS PART-NO
              INVALID KEY
-      *            part not in catalogue -> count it as an error
-               ADD 1 TO WS-ERRORS
-               DISPLAY ORD-ID ' ERR part ' ORD-PART-NO ' not found'
+      *            part not in catalogue -> skip it (flagged, not priced)
+               ADD 1 TO WS-SKIPPED
+               DISPLAY 'SKIP ' ORD-ID ' part ' ORD-PART-NO
+                       ' not in catalogue'
              NOT INVALID KEY
       *            found it -> apply the shared pricing rules...
                CALL 'PRICECAL' USING ORD-COUNTRY ORD-QTY

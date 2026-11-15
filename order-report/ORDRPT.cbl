@@ -53,6 +53,10 @@
        01  WS-GRAND.
            05  FILLER         PIC X(12) VALUE 'GRAND TOTAL '.
            05  WS-GR-AMOUNT   PIC Z,ZZZ,ZZ9.99.
+       01  WS-BLANK           PIC X(72) VALUE SPACES.
+       01  WS-RULE.
+           05  FILLER         PIC X(04) VALUE SPACES.
+           05  FILLER         PIC X(28) VALUE ALL '-'.
 
        PROCEDURE DIVISION.
        MAIN.
@@ -65,6 +69,7 @@
                IF PR-COUNTRY NOT = WS-PREV-COUNTRY
                    IF WS-FIRST = 'N'
                        PERFORM WRITE-SUBTOTAL
+                       PERFORM WRITE-BLANK
                    END-IF
                    MOVE PR-COUNTRY TO WS-PREV-COUNTRY
                    MOVE 'N' TO WS-FIRST
@@ -77,10 +82,11 @@
                PERFORM READ-PRICED
            END-PERFORM
 
-      *    last group subtotal + grand total
+      *    last group subtotal, a rule, then the grand total
            IF WS-FIRST = 'N'
                PERFORM WRITE-SUBTOTAL
            END-IF
+           PERFORM WRITE-RULE
            PERFORM WRITE-GRAND
 
            CLOSE PRICED-FILE
@@ -107,3 +113,9 @@
        WRITE-GRAND.
            MOVE WS-GRAND-TOTAL TO WS-GR-AMOUNT
            WRITE REPORT-LINE FROM WS-GRAND.
+
+       WRITE-BLANK.
+           WRITE REPORT-LINE FROM WS-BLANK.
+
+       WRITE-RULE.
+           WRITE REPORT-LINE FROM WS-RULE.

@@ -11,8 +11,7 @@ flowchart TB
     PM[(Parts master<br/>VSAM KSDS)]
     PROC[ORDPROC + PRICECAL<br/>price orders]
     RPT[ORDRPT<br/>country report]
-    INV[INVEXTR<br/>SAP extract]
-    DB2P[SALESDB2<br/>DB2 load]
+    INV[INVEXTR<br/>invoice extract]
     PRICED[Priced orders file]
 
     CPY -.shared record layouts.-> PM
@@ -21,7 +20,6 @@ flowchart TB
     PROC --> PRICED
     PRICED --> RPT
     PRICED --> INV
-    PRICED --> DB2P
 ```
 
 ## Pricing sequence (UC-2)
@@ -42,27 +40,18 @@ sequenceDiagram
             C-->>P: gross, status
             P->>O: write priced record
         else part not found
-            P->>P: count as error (not written)
+            P->>P: count as skipped (not written)
         end
     end
-    P->>P: write run summary (priced / error counts)
+    P->>P: write run summary (priced / skipped counts)
 ```
 
-## Two data models
+## Storage — VSAM
 
-The same flow uses both storage styles found on a real estate:
-
-| | VSAM (parts, orders, priced) | DB2 (sales summary) |
-|---|---|---|
-| Kind | keyed / sequential files | relational tables |
-| Access | **navigational** — read by key | **relational** — SQL, set-based |
-| Who plans the access path | you (the program) | the DB2 optimizer |
-| Strength | fast, predictable for known paths | flexible, any query |
-
-Operational, high-volume data stays in VSAM (navigational, cheap for the known
-"look up a part by key" path). The analytics copy goes to DB2 so reporting can
-query it with ordinary SQL. Understanding which store holds what — and how data
-moves between them — is the core of the "data flow" analysis work.
+The parts, orders and priced results are **VSAM / sequential files** — keyed,
+navigational access native to z/OS. A single part is fetched directly by its key
+(`look up part by part number`), not joined across tables. Fast and predictable
+for the known access path.
 
 ## Design decisions
 
@@ -72,7 +61,7 @@ moves between them — is the core of the "data flow" analysis work.
 - **Money as packed decimal** (`COMP-3`) — exact, no floating point.
 - **Country VAT** from a small decision table (country → rate); an unknown
   country is an explicit `status 'E'`, never a silent zero.
-- **Errors are flagged, not hidden** — an unknown part is counted and reported,
-  so a run is reconcilable against its input count.
-- **Two-layer testing** — pricing logic is unit-tested locally (GnuCOBOL,
-  `make test`); the full VSAM / JCL / DB2 path is integration-tested on z/OS.
+- **Unknown parts are skipped, not hidden** — counted and reported, so a run is
+  reconcilable against its input count.
+- **Two-layer testing** — pricing logic is unit-tested (`make test`); the full
+  catalogue → pricing → report → extract flow runs locally (`make run`).
