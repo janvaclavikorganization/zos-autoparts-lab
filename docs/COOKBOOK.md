@@ -141,6 +141,10 @@ Pozice = všechno. (`parts.dat`, každý řádek 42 znaků.)
 
 ## Lekce 4 — První COBOL program (čtečka)
 
+**Jednoduše:** `PARTRDR.cbl` otevře naplněnou tabulku, `while` smyčkou ji pročte
+a vypíše každý díl. **Otevři → protoč → zavři.** Zbytek programu je jen ceremonie,
+co vypadá v každém COBOLu stejně.
+
 **Každý program = 4 divisions:**
 1. **IDENTIFICATION** — jméno programu.
 2. **ENVIRONMENT** — napojení souborů (`SELECT ... ASSIGN TO ddname`, typ souboru).
