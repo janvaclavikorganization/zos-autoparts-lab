@@ -20,12 +20,44 @@ catalogue and produces a per-country sales report:
 See [docs/use-cases.md](docs/use-cases.md) for the use cases and
 [docs/architecture.md](docs/architecture.md) for the data flow and diagrams.
 
-## Toolchain
+## Tech stack
 
-- **z/OS** — IBM Z Xplore (free cloud z/OS environment)
-- **Editor** — VS Code + IBM Z Open Editor (COBOL / JCL language support)
-- **Connectivity** — Zowe Explorer (datasets, JCL job submit, job output)
-- **Languages / storage** — COBOL, JCL, VSAM
+**Mainframe (target platform)**
+- **IBM z/OS** — the mainframe operating system (modern successor to MVS)
+- **COBOL** — the application language (Enterprise COBOL on z/OS)
+- **JCL** — Job Control Language; runs and wires the batch jobs
+- **VSAM (KSDS)** — keyed file storage for the parts catalogue
+- **IDCAMS** — VSAM utility (DEFINE the cluster, REPRO to load it)
+- **DFSORT / SORT** — sort utility used in the pipeline
+- **DB2 + embedded SQL** — relational store for the sales summary *(planned step)*
+- **IMS** — hierarchical database *(covered conceptually in the cookbook)*
+
+**Modern dev toolchain (macOS / Apple Silicon)**
+- **VS Code** — editor
+- **IBM Z Open Editor** — COBOL / JCL / PL-I language support
+- **Zowe Explorer** — z/OS connectivity: datasets, submit JCL, read job output
+- **IBM Z Xplore** — free cloud z/OS for integration runs
+- **Java 21 (OpenJDK / Temurin)** — runtime for the Z Open Editor language server
+
+**Local build & test (no mainframe needed)**
+- **GnuCOBOL (`cobc`)** — compiles and runs COBOL locally on the Mac
+- **Make** — `make test` build & test runner
+- **Scenario unit tests** — pricing logic tested per branch, PASS/FAIL, non-zero exit
+
+**Downstream integration targets (illustrative)**
+- **SAP FI** — invoicing interface file
+- **WMS** — warehouse pick list
+- **BI / reporting** — daily sales summary (via DB2)
+
+**Project & docs**
+- **Git / GitHub** — version control
+- **Mermaid** — architecture & flow diagrams
+- **Markdown** — docs + a learning cookbook
+
+**Approach**
+- AI-assisted, documentation-first development
+- Pricing logic separated from I/O (unit-testable)
+- Two-layer testing: unit (local GnuCOBOL) + integration (z/OS)
 
 Setup steps in [docs/setup.md](docs/setup.md).
 
@@ -41,4 +73,6 @@ Setup steps in [docs/setup.md](docs/setup.md).
 
 ## Status
 
-🚧 Scaffold — environment and design in place; programs being filled in.
+🚧 Work in progress — parts catalogue (VSAM), order pricing (COBOL) and the
+pipeline design are in place; pricing logic is **unit-tested locally**
+(`make test`). Report, invoicing extract and DB2 load are next.
