@@ -1,0 +1,12 @@
+{
+  "// COBOL fixed-format sloupce": "pravítka na hranicích: 6=konec sequence, 7=indikátor, 11=konec Area A, 72=konec Area B",
+  "[cobol]": {
+    "editor.rulers": [6, 7, 11, 72],
+    "editor.detectIndentation": false,
+    "editor.insertSpaces": true,
+    "editor.tabSize": 4
+  },
+  "[jcl]": {
+    "editor.rulers": [71, 72]
+  }
+}
